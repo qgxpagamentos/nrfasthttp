@@ -99,24 +99,6 @@ func Middleware(app *newrelic.Application, f fasthttp.RequestHandler) fasthttp.R
 	}
 }
 
-// NewDataStoreSegment - Newrelic datasource
-func NewDataStoreSegment(ctx *fasthttp.RequestCtx, tableName, operation string) *newrelic.DatastoreSegment {
-
-	txn := FromContext(ctx)
-	if txn == nil {
-		return nil
-	}
-
-	s := newrelic.DatastoreSegment{
-		StartTime:  txn.StartSegmentNow(),
-		Product:    newrelic.DatastoreDynamoDB,
-		Collection: tableName,
-		Operation:  operation,
-	}
-
-	return &s
-}
-
 // NewExternalSegment - external segment
 func NewExternalSegment(ctx *fasthttp.RequestCtx, req fasthttp.Request) *newrelic.ExternalSegment {
 	txn := FromContext(ctx)
@@ -142,4 +124,22 @@ func NewSegment(ctx *fasthttp.RequestCtx, name string) *newrelic.Segment {
 	}
 
 	return txn.StartSegment(name)
+}
+
+// NewDataStoreSegment - Newrelic datasource
+func NewDataStoreSegment(ctx *fasthttp.RequestCtx, tableName, operation string) *newrelic.DatastoreSegment {
+
+	txn := FromContext(ctx)
+	if txn == nil {
+		return nil
+	}
+
+	s := newrelic.DatastoreSegment{
+		StartTime:  txn.StartSegmentNow(),
+		Product:    newrelic.DatastoreDynamoDB,
+		Collection: tableName,
+		Operation:  operation,
+	}
+
+	return &s
 }

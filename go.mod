@@ -25,4 +25,6 @@ retract (
 	v1.0.0
 	// Mistake happened in the version DO NOT USE
 	v1.0.1
+	// Mistake happened in the version DO NOT USE
+	v1.0.2
 )
