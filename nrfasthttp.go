@@ -126,3 +126,20 @@ func NewSegment(ctx *fasthttp.RequestCtx, name string) *newrelic.Segment {
 
 	return txn.StartSegment(name)
 }
+
+// NewExternalSegment - external segment
+func NewExternalSegment(ctx *fasthttp.RequestCtx, req fasthttp.Request) *newrelic.ExternalSegment {
+	txn := FromContext(ctx)
+	if txn == nil {
+		return nil
+	}
+
+	newCTX := fasthttp.RequestCtx{}
+	newCTX.Request = req
+	var r http.Request
+	if e := fasthttpadaptor.ConvertRequest(&newCTX, &r, true); e != nil {
+		return nil
+	}
+
+	return newrelic.StartExternalSegment(txn, &r)
+}
