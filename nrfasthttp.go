@@ -117,16 +117,6 @@ func NewDataStoreSegment(ctx *fasthttp.RequestCtx, tableName, operation string) 
 	return &s
 }
 
-// NewSegment - simple segment
-func NewSegment(ctx *fasthttp.RequestCtx, name string) *newrelic.Segment {
-	txn := FromContext(ctx)
-	if txn == nil {
-		return nil
-	}
-
-	return txn.StartSegment(name)
-}
-
 // NewExternalSegment - external segment
 func NewExternalSegment(ctx *fasthttp.RequestCtx, req fasthttp.Request) *newrelic.ExternalSegment {
 	txn := FromContext(ctx)
@@ -142,4 +132,14 @@ func NewExternalSegment(ctx *fasthttp.RequestCtx, req fasthttp.Request) *newreli
 	}
 
 	return newrelic.StartExternalSegment(txn, &r)
+}
+
+// NewSegment - simple segment
+func NewSegment(ctx *fasthttp.RequestCtx, name string) *newrelic.Segment {
+	txn := FromContext(ctx)
+	if txn == nil {
+		return nil
+	}
+
+	return txn.StartSegment(name)
 }

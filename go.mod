@@ -20,4 +20,9 @@ require (
 	google.golang.org/protobuf v1.25.0 // indirect
 )
 
-retract v1.0.1
+retract (
+	// Mistake happened in the version DO NOT USE
+	v1.0.0
+	// Mistake happened in the version DO NOT USE
+	v1.0.1
+)
