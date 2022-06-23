@@ -1,4 +1,4 @@
-module github.com/qgxpagamentos/nrfasthttp
+module github.com/qgxpagamentos/nrfasthttp/v2
 
 go 1.18
 
