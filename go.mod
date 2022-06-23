@@ -1,4 +1,4 @@
-module github.com/qgxpagamentos/nrfasthttp/v2
+module github.com/qgxpagamentos/nrfasthttp
 
 go 1.18
 
@@ -19,3 +19,5 @@ require (
 	google.golang.org/grpc v1.39.0 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 )
+
+retract v1.0.1
