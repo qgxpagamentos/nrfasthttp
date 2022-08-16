@@ -100,14 +100,14 @@ func Middleware(app *newrelic.Application, f fasthttp.RequestHandler) fasthttp.R
 }
 
 // NewExternalSegment - external segment
-func NewExternalSegment(ctx *fasthttp.RequestCtx, req fasthttp.Request) *newrelic.ExternalSegment {
+func NewExternalSegment(ctx *fasthttp.RequestCtx, request *fasthttp.Request) *newrelic.ExternalSegment {
 	txn := FromContext(ctx)
 	if txn == nil {
 		return nil
 	}
 
 	newCTX := fasthttp.RequestCtx{}
-	newCTX.Request = req
+	request.CopyTo(&newCTX.Request)
 	var r http.Request
 	if e := fasthttpadaptor.ConvertRequest(&newCTX, &r, true); e != nil {
 		return nil
