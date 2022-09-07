@@ -105,14 +105,12 @@ func NewExternalSegment(ctx *fasthttp.RequestCtx, request *fasthttp.Request) *ne
 	if txn == nil {
 		return nil
 	}
-
 	newCTX := fasthttp.RequestCtx{}
 	request.CopyTo(&newCTX.Request)
 	var r http.Request
 	if e := fasthttpadaptor.ConvertRequest(&newCTX, &r, true); e != nil {
 		return nil
 	}
-
 	return newrelic.StartExternalSegment(txn, &r)
 }
 
@@ -122,24 +120,20 @@ func NewSegment(ctx *fasthttp.RequestCtx, name string) *newrelic.Segment {
 	if txn == nil {
 		return nil
 	}
-
 	return txn.StartSegment(name)
 }
 
 // NewDataStoreSegment - Newrelic datasource
 func NewDataStoreSegment(ctx *fasthttp.RequestCtx, tableName, operation string) *newrelic.DatastoreSegment {
-
 	txn := FromContext(ctx)
 	if txn == nil {
 		return nil
 	}
-
 	s := newrelic.DatastoreSegment{
-		StartTime:  txn.StartSegmentNow(),
+		StartTime:  newrelic.StartSegmentNow(txn),
 		Product:    newrelic.DatastoreDynamoDB,
 		Collection: tableName,
 		Operation:  operation,
 	}
-
 	return &s
 }
