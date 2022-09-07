@@ -1,10 +1,10 @@
 module github.com/qgxpagamentos/nrfasthttp
 
-go 1.18
+go 1.19
 
 require (
-	github.com/newrelic/go-agent/v3 v3.18.0
-	github.com/valyala/fasthttp v1.39.0
+	github.com/newrelic/go-agent/v3 v3.18.1
+	github.com/valyala/fasthttp v1.40.0
 )
 
 require (

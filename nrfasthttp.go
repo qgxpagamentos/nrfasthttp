@@ -56,8 +56,7 @@ func FromContext(ctx *fasthttp.RequestCtx) *newrelic.Transaction {
 // Middleware - middleware para fasthpp new relic
 func Middleware(app *newrelic.Application, f fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
-
-		if nil == app {
+		if app == nil {
 			f(ctx)
 			return
 		}
