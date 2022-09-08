@@ -136,3 +136,19 @@ func NewDataStoreSegment(ctx *fasthttp.RequestCtx, tableName, operation string) 
 	}
 	return &s
 }
+
+// EndSegment - endSegment
+func EndSegment(v interface{}) {
+	if s, ok := v.(*newrelic.ExternalSegment); ok {
+		s.End()
+	}
+	if s, ok := v.(*newrelic.DatastoreSegment); ok {
+		s.End()
+	}
+	if s, ok := v.(*newrelic.Segment); ok {
+		s.End()
+	}
+	if s, ok := v.(*newrelic.MessageProducerSegment); ok {
+		s.End()
+	}
+}
