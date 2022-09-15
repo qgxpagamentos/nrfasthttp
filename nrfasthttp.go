@@ -1,21 +1,16 @@
 package nrfasthttp
 
 import (
-	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
 	"net/http"
+	"reflect"
 
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 )
-
-// Response - object Response Http
-type Response struct {
-	io.Writer
-	h int
-}
 
 type errWrapper struct {
 	err interface{}
@@ -24,22 +19,6 @@ type errWrapper struct {
 func (e errWrapper) Error() string {
 	return fmt.Sprintf("generic error %v", e.err)
 }
-
-func newResponse(statusCode int) http.ResponseWriter {
-	return &Response{h: statusCode}
-}
-
-func newResponseWithBody(data []byte, statusCode int) http.ResponseWriter {
-	return &Response{Writer: bytes.NewBuffer(data), h: statusCode}
-}
-
-// Header - retorna informações do header http
-func (w *Response) Header() http.Header { return w.Header() }
-
-// WriteHeader - informa status code http
-func (w *Response) WriteHeader(h int) { w.h = h }
-
-func (w *Response) String() string { return fmt.Sprintf("[%v] %q", w.h, w.Writer) }
 
 // NewRelicTransaction - key context transaction newrelic
 const NewRelicTransaction = "__newrelic_txn_fasthttp__"
@@ -59,6 +38,23 @@ func Middleware(app *newrelic.Application, f fasthttp.RequestHandler) fasthttp.R
 		if app == nil {
 			f(ctx)
 			return
+		}
+		isNil := func(value interface{}) bool {
+			if value == nil {
+				return true
+			}
+			if reflect.ValueOf(value).Kind() == reflect.Ptr && reflect.ValueOf(value).IsNil() {
+				return true
+			}
+			if reflect.ValueOf(value).Kind() == reflect.Invalid {
+				return true
+			}
+			return false
+		}
+
+		toJSON := func(v interface{}) string {
+			data, _ := json.Marshal(v)
+			return string(data)
 		}
 
 		txn := app.StartTransaction(string(ctx.Request.Header.Method()) + " " + string(ctx.Request.URI().Path()))
@@ -91,10 +87,14 @@ func Middleware(app *newrelic.Application, f fasthttp.RequestHandler) fasthttp.R
 
 		f(ctx)
 
-		statusCode := ctx.Response.StatusCode()
+		if ctx.Response.StatusCode() > 300 {
+			if val := ctx.UserValue("payload"); !isNil(val) {
+				txn.NoticeError(errors.New(toJSON(val)))
+			}
+		}
 
-		w := newResponse(statusCode)
-		txn.SetWebResponse(w)
+		w := txn.SetWebResponse(nil)
+		w.WriteHeader(ctx.Response.StatusCode())
 	}
 }
 
